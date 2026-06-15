@@ -28,7 +28,7 @@ export function Header() {
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <Link href="/notifications">
+              <Link href="/dashboard/notifications">
                 <Bell className="h-5 w-5 text-gray-600 hover:text-gray-900" />
               </Link>
               <div className="relative">
