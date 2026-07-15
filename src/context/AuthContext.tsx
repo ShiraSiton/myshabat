@@ -1,14 +1,15 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { User, UserRole, UserStatus } from '@/lib/types';
-import { mockUsers } from '@/lib/mock-data';
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { supabase } from '@/lib/supabase';
+import type { User, UserRole } from '@/lib/types';
 
 interface AuthContextType {
   user: User | null;
+  loading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (email: string, password: string, role: UserRole) => Promise<{ success: boolean; error?: string }>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAdmin: boolean;
   isHost: boolean;
   isGuest: boolean;
@@ -17,40 +18,59 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(mockUsers[3]);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) fetchUser(session.user.id);
+      else setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) fetchUser(session.user.id);
+      else { setUser(null); setLoading(false); }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchUser = async (authId: string) => {
+    const { data } = await supabase.from('users').select('*').eq('id', authId).single();
+    if (data) setUser(data as User);
+    setLoading(false);
+  };
 
   const login = useCallback(async (email: string, password: string) => {
-    const found = mockUsers.find((u) => u.email === email);
-    if (!found) return { success: false, error: 'משתמש לא נמצא' };
-    if (found.status !== 'active') return { success: false, error: 'החשבון לא פעיל. אנא פנה למנהל המערכת.' };
-    setUser(found);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { success: false, error: error.message };
     return { success: true };
   }, []);
 
-  const register = useCallback(async (email: string, _password: string, role: UserRole) => {
-    const exists = mockUsers.find((u) => u.email === email);
-    if (exists) return { success: false, error: 'כתובת האימייל כבר רשומה במערכת' };
-    const newUser: User = {
-      id: String(Date.now()),
+  const register = useCallback(async (email: string, password: string, role: UserRole) => {
+    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+    if (authError) return { success: false, error: authError.message };
+    if (!authData.user) return { success: false, error: 'שגיאה ביצירת המשתמש' };
+
+    const { error: dbError } = await supabase.from('users').insert({
+      id: authData.user.id,
       email,
-      password_hash: 'hashed',
       role,
       status: 'pending',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    mockUsers.push(newUser);
+    });
+    if (dbError) return { success: false, error: dbError.message };
     return { success: true, error: 'נרשמת בהצלחה! החשבון ממתין לאישור מנהל.' };
   }, []);
 
-  const logout = useCallback(() => setUser(null), []);
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  }, []);
 
   return (
     <AuthContext.Provider value={{
-      user,
-      login,
-      register,
-      logout,
+      user, loading,
+      login, register, logout,
       isAdmin: user?.role === 'admin',
       isHost: user?.role === 'host',
       isGuest: user?.role === 'guest',
