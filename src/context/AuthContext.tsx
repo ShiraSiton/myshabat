@@ -47,18 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: true };
   }, []);
 
-  const register = useCallback(async (email: string, password: string, role: UserRole) => {
-    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+  const register = useCallback(async (email: string, password: string, _role: UserRole) => {
+    const { error: authError } = await supabase.auth.signUp({ email, password });
     if (authError) return { success: false, error: authError.message };
-    if (!authData.user) return { success: false, error: 'שגיאה ביצירת המשתמש' };
-
-    const { error: dbError } = await supabase.from('users').upsert({
-      id: authData.user.id,
-      email,
-      role,
-      status: 'active',
-    }, { onConflict: 'id' });
-    if (dbError) return { success: false, error: dbError.message };
     return { success: true };
   }, []);
 
