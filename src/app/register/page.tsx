@@ -19,13 +19,11 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<UserRole>('guest');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
     setIsLoading(true);
 
     const result = registerSchema.safeParse({ email, password, confirmPassword, role });
@@ -37,7 +35,7 @@ export default function RegisterPage() {
 
     const res = await register(email, password, role);
     if (res.success) {
-      setSuccess(res.error || 'נרשמת בהצלחה! ממתין לאישור מנהל.');
+      router.push('/');
     } else {
       setError(res.error || 'אירעה שגיאה');
     }
@@ -50,12 +48,6 @@ export default function RegisterPage() {
       <main className="flex-1 py-16">
         <div className="mx-auto max-w-md px-4">
           <h1 className="mb-6 text-center text-3xl font-bold text-gray-900">הרשמה</h1>
-          {success ? (
-            <div className="rounded-xl border border-green-200 bg-green-50 p-8 text-center">
-              <p className="text-lg font-medium text-green-800">{success}</p>
-              <Link href="/login" className="mt-4 inline-block text-blue-600 hover:underline">מעבר להתחברות</Link>
-            </div>
-          ) : (
             <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
               <Input label="כתובת אימייל" id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -77,7 +69,6 @@ export default function RegisterPage() {
                 כבר רשומים? <Link href="/login" className="text-blue-600 hover:underline">התחברות</Link>
               </p>
             </form>
-          )}
         </div>
       </main>
       <Footer />

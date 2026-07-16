@@ -52,14 +52,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (authError) return { success: false, error: authError.message };
     if (!authData.user) return { success: false, error: 'שגיאה ביצירת המשתמש' };
 
-    const { error: dbError } = await supabase.from('users').insert({
+    const { error: dbError } = await supabase.from('users').upsert({
       id: authData.user.id,
       email,
       role,
-      status: 'pending',
-    });
+      status: 'active',
+    }, { onConflict: 'id' });
     if (dbError) return { success: false, error: dbError.message };
-    return { success: true, error: 'נרשמת בהצלחה! החשבון ממתין לאישור מנהל.' };
+    return { success: true };
   }, []);
 
   const logout = useCallback(async () => {
