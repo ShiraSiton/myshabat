@@ -8,10 +8,16 @@ import { Menu, X, Bell, User, LogOut, ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export function Header() {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, isHost, isGuest, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  const profileHref = isHost
+    ? '/dashboard/profile/host'
+    : isGuest
+      ? '/dashboard/profile/guest'
+      : null;
 
   useEffect(() => {
     let cancelled = false;
@@ -71,6 +77,11 @@ export function Header() {
                     <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
                       <User className="h-4 w-4" /> אזור אישי
                     </Link>
+                    {profileHref && (
+                      <Link href={profileHref} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
+                        <User className="h-4 w-4" /> הפרופיל שלי
+                      </Link>
+                    )}
                     {isAdmin && (
                       <Link href="/admin" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
                         ניהול מערכת

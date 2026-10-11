@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import {
   Home, Search, Users, MessageCircle, Bell, Star,
-  UserPlus, Shield, FileText, BarChart3,
+  UserPlus, Shield, FileText, BarChart3, User,
 } from 'lucide-react';
 
 interface NavItem {
@@ -18,10 +18,17 @@ interface NavItem {
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isHost, isGuest } = useAuth();
+
+  const profileHref = isHost
+    ? '/dashboard/profile/host'
+    : isGuest
+      ? '/dashboard/profile/guest'
+      : null;
 
   const navItems: NavItem[] = [
     { href: '/dashboard', label: 'לוח בקרה', icon: <Home className="h-4 w-4" /> },
+    ...(profileHref ? [{ href: profileHref, label: 'הפרופיל שלי', icon: <User className="h-4 w-4" /> }] : []),
     { href: '/dashboard/search', label: 'חיפוש', icon: <Search className="h-4 w-4" /> },
     { href: '/dashboard/matches', label: 'התאמות', icon: <Users className="h-4 w-4" /> },
     { href: '/dashboard/matches/requests', label: 'פניות', icon: <UserPlus className="h-4 w-4" /> },
