@@ -10,7 +10,7 @@ export default function CommunityChatPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">צ'אט קהילתי</h1>
+      <h1 className="text-2xl font-bold">צ׳אט קהילתי</h1>
       <Card>
         <CardHeader><h2 className="font-semibold">חיבורים פעילים</h2></CardHeader>
         <CardContent>
@@ -21,7 +21,7 @@ export default function CommunityChatPage() {
               <p className="text-sm">שלח בקשת היכרות דרך מפת משתדלי השבת</p>
             </div>
           ) : (
-            <p className="text-center py-8 text-gray-500">צ'אט קהילתי יפותח בשלב הבא</p>
+            <p className="text-center py-8 text-gray-500">צ׳אט קהילתי יפותח בשלב הבא</p>
           )}
         </CardContent>
       </Card>

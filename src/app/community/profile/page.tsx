@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { getStore } from '@/lib/store';
-import { communityProfileSchema } from '@/lib/validations';
 import { MapPin, Edit3 } from 'lucide-react';
 
 export default function CommunityProfilePage() {

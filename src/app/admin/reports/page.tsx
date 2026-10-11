@@ -13,7 +13,7 @@ export default function AdminReportsPage() {
         <Card>
           <CardHeader><h2 className="font-semibold">סטטיסטיקות משתמשים</h2></CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex justify-between"><span>סה"כ משתמשים</span><span className="font-bold">{store.users.length}</span></div>
+            <div className="flex justify-between"><span>סה״כ משתמשים</span><span className="font-bold">{store.users.length}</span></div>
             <div className="flex justify-between"><span>מארחים</span><span className="font-bold">{store.users.filter((u) => u.role === 'host').length}</span></div>
             <div className="flex justify-between"><span>מתארחים</span><span className="font-bold">{store.users.filter((u) => u.role === 'guest').length}</span></div>
             <div className="flex justify-between"><span>ממתינים לאישור</span><span className="font-bold">{store.users.filter((u) => u.status === 'pending').length}</span></div>
@@ -22,7 +22,7 @@ export default function AdminReportsPage() {
         <Card>
           <CardHeader><h2 className="font-semibold">סטטיסטיקות התאמות</h2></CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex justify-between"><span>סה"כ התאמות</span><span className="font-bold">{store.matches.length}</span></div>
+            <div className="flex justify-between"><span>סה״כ התאמות</span><span className="font-bold">{store.matches.length}</span></div>
             <div className="flex justify-between"><span>בקשות ממתינות</span><span className="font-bold">{store.matchRequests.filter((r) => r.status === 'pending').length}</span></div>
             <div className="flex justify-between"><span>בקשות מאושרות</span><span className="font-bold">{store.matchRequests.filter((r) => r.status === 'approved').length}</span></div>
             <div className="flex justify-between"><span>משובים</span><span className="font-bold">{store.reviews.length}</span></div>

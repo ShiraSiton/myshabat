@@ -32,7 +32,8 @@ export default function LoginPage() {
 
     const res = await login(email, password);
     if (res.success) {
-      router.push('/dashboard');
+      const returnTo = new URLSearchParams(window.location.search).get('returnTo') || '/dashboard';
+      router.push(returnTo);
     } else {
       setError(res.error || 'אירעה שגיאה');
     }

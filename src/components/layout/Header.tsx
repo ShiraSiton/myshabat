@@ -3,13 +3,33 @@
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
+import { getUnreadNotificationsCount } from '@/lib/api/notifications';
 import { Menu, X, Bell, User, LogOut, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export function Header() {
   const { user, isAdmin, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const countPromise = user ? getUnreadNotificationsCount(user.id) : Promise.resolve(0);
+
+    countPromise
+      .then((count) => {
+        if (!cancelled) setUnreadCount(count);
+      })
+      .catch(() => {
+        if (!cancelled) setUnreadCount(0);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur">
@@ -28,8 +48,13 @@ export function Header() {
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <Link href="/dashboard/notifications">
+              <Link href="/dashboard/notifications" className="relative">
                 <Bell className="h-5 w-5 text-gray-600 hover:text-gray-900" />
+                {unreadCount > 0 && (
+                  <span className="absolute -left-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
               </Link>
               <div className="relative">
                 <button

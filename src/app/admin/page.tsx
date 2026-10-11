@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/Card';
 import { getStore } from '@/lib/store';
-import { Users, FileText, Star, Bell } from 'lucide-react';
+import { Users, Star, Bell } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminPage() {
@@ -13,7 +13,7 @@ export default function AdminPage() {
   const stats = [
     { label: 'משתמשים ממתינים', value: pendingUsers.length, icon: Users, color: 'bg-yellow-100 text-yellow-700', href: '/admin/users' },
     { label: 'משובים לאישור', value: pendingReviews.length, icon: Star, color: 'bg-purple-100 text-purple-700', href: '/admin/reviews' },
-    { label: 'סה"כ משתמשים', value: store.users.length, icon: Users, color: 'bg-blue-100 text-blue-700', href: '/admin/users' },
+    { label: 'סה״כ משתמשים', value: store.users.length, icon: Users, color: 'bg-blue-100 text-blue-700', href: '/admin/users' },
     { label: 'התאמות', value: store.matches.length, icon: Bell, color: 'bg-green-100 text-green-700', href: '/admin/reports' },
   ];
 

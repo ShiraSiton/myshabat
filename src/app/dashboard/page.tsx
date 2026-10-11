@@ -1,18 +1,70 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { getStore } from '@/lib/store';
 import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/utils';
+import { getDashboardSummary, type DashboardSummary } from '@/lib/api/dashboard';
 import { Bell, MessageCircle, Star, Users } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { user, isHost, isGuest } = useAuth();
-  const store = getStore();
-  const notifications = store.notifications.filter((n) => !n.is_read);
-  const matchRequests = store.matchRequests.filter((r) => r.receiver_id === user?.id && r.status === 'pending');
+  const { user } = useAuth();
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+
+    getDashboardSummary(user.id)
+      .then((data) => {
+        if (!cancelled) setSummary(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'טעינת הדשבורד נכשלה');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const stats = [
+    {
+      label: 'התראות',
+      value: summary?.unreadNotificationsCount || 0,
+      icon: Bell,
+      color: 'bg-blue-100 text-blue-600',
+      href: '/dashboard/notifications',
+    },
+    {
+      label: 'שיחות',
+      value: summary?.conversationsCount || 0,
+      icon: MessageCircle,
+      color: 'bg-green-100 text-green-600',
+      href: '/dashboard/chat',
+    },
+    {
+      label: 'בקשות ממתינות',
+      value: summary?.pendingRequestsCount || 0,
+      icon: Star,
+      color: 'bg-purple-100 text-purple-600',
+      href: '/dashboard/matches/requests',
+    },
+    {
+      label: 'התאמות',
+      value: summary?.matchesCount || 0,
+      icon: Users,
+      color: 'bg-orange-100 text-orange-600',
+      href: '/dashboard/matches',
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -21,48 +73,43 @@ export default function DashboardPage() {
         <Badge status={user?.status || 'pending'} />
       </div>
 
+      {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardContent className="flex items-center gap-4 pt-4">
-            <div className="rounded-full bg-blue-100 p-3"><Bell className="h-5 w-5 text-blue-600" /></div>
-            <div><p className="text-2xl font-bold">{notifications.length}</p><p className="text-sm text-gray-600">התראות</p></div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 pt-4">
-            <div className="rounded-full bg-green-100 p-3"><MessageCircle className="h-5 w-5 text-green-600" /></div>
-            <div><p className="text-2xl font-bold">{store.conversations.length}</p><p className="text-sm text-gray-600">שיחות</p></div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 pt-4">
-            <div className="rounded-full bg-purple-100 p-3"><Star className="h-5 w-5 text-purple-600" /></div>
-            <div><p className="text-2xl font-bold">{matchRequests.length}</p><p className="text-sm text-gray-600">בקשות ממתינות</p></div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 pt-4">
-            <div className="rounded-full bg-orange-100 p-3"><Users className="h-5 w-5 text-orange-600" /></div>
-            <div><p className="text-2xl font-bold">{store.matches.length}</p><p className="text-sm text-gray-600">התאמות</p></div>
-          </CardContent>
-        </Card>
+        {stats.map((stat) => (
+          <Link key={stat.label} href={stat.href} className="block">
+            <Card className="transition-shadow hover:shadow-md">
+              <CardContent className="flex items-center gap-4 pt-4">
+                <div className={`rounded-full p-3 ${stat.color}`}><stat.icon className="h-5 w-5" /></div>
+                <div>
+                  <p className="text-2xl font-bold">{loading ? '...' : stat.value}</p>
+                  <p className="text-sm text-gray-600">{stat.label}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader><h2 className="font-semibold">בקשות התאמה ממתינות</h2></CardHeader>
           <CardContent>
-            {matchRequests.length === 0 ? (
+            {loading ? (
+              <p className="text-sm text-gray-500">טוען...</p>
+            ) : !summary || summary.pendingRequests.length === 0 ? (
               <p className="text-sm text-gray-500">אין בקשות ממתינות</p>
             ) : (
               <div className="space-y-3">
-                {matchRequests.map((req) => (
-                  <div key={req.id} className="flex items-center justify-between rounded-lg border p-3">
+                {summary.pendingRequests.map((request) => (
+                  <div key={request.id} className="flex items-center justify-between rounded-lg border p-3">
                     <div>
-                      <p className="text-sm font-medium">{store.users.find((u) => u.id === req.sender_id)?.email}</p>
-                      <p className="text-xs text-gray-500">{formatDate(req.created_at)}</p>
+                      <p className="text-sm font-medium">
+                        {request.sender_role === 'host' ? 'פנייה ממארח' : 'פנייה ממתארח'}
+                      </p>
+                      <p className="text-xs text-gray-500">{formatDate(request.created_at)}</p>
                     </div>
-                    <Badge status={req.status} />
+                    <Badge status={request.status} />
                   </div>
                 ))}
               </div>
@@ -73,16 +120,18 @@ export default function DashboardPage() {
         <Card>
           <CardHeader><h2 className="font-semibold">התראות אחרונות</h2></CardHeader>
           <CardContent>
-            {store.notifications.length === 0 ? (
+            {loading ? (
+              <p className="text-sm text-gray-500">טוען...</p>
+            ) : !summary || summary.recentNotifications.length === 0 ? (
               <p className="text-sm text-gray-500">אין התראות</p>
             ) : (
               <div className="space-y-3">
-                {store.notifications.slice(0, 5).map((n) => (
-                  <div key={n.id} className="flex items-start gap-3 rounded-lg border p-3">
-                    <div className={`mt-1 h-2 w-2 rounded-full ${n.is_read ? 'bg-gray-300' : 'bg-blue-500'}`} />
+                {summary.recentNotifications.map((notification) => (
+                  <div key={notification.id} className="flex items-start gap-3 rounded-lg border p-3">
+                    <div className={`mt-1 h-2 w-2 rounded-full ${notification.is_read ? 'bg-gray-300' : 'bg-blue-500'}`} />
                     <div>
-                      <p className="text-sm font-medium">{n.title}</p>
-                      <p className="text-xs text-gray-500">{n.content}</p>
+                      <p className="text-sm font-medium">{notification.title}</p>
+                      <p className="text-xs text-gray-500">{notification.content}</p>
                     </div>
                   </div>
                 ))}

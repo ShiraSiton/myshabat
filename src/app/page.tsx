@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
-import { ArrowLeft, Heart, Users, MapPin, MessageCircle, Star } from 'lucide-react';
+import { Heart, Users, MapPin, MessageCircle, Star } from 'lucide-react';
 
 const features = [
   { icon: Heart, title: 'אירוח משפחתי', desc: 'התארחו אצל משפחות דתיות חמות ומסבירות פנים' },

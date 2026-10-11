@@ -2,6 +2,7 @@
 
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +10,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 bg-gray-50 p-6">{children}</main>
+        <main className="flex-1 bg-gray-50 p-6">
+          <ProtectedRoute>{children}</ProtectedRoute>
+        </main>
       </div>
     </div>
   );

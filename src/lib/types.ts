@@ -10,7 +10,7 @@ export type ConnectionStatus = 'pending' | 'approved' | 'rejected';
 export interface User {
   id: string;
   email: string;
-  password_hash: string;
+  password_hash?: string;
   role: UserRole;
   status: UserStatus;
   created_at: string;

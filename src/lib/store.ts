@@ -3,6 +3,7 @@ import type {
   Conversation, Message, Review, CommunityProfile,
   CommunityConnection, Notification,
 } from './types';
+import { mockData } from './mock-data';
 
 export interface AppStore {
   // Auth
@@ -36,7 +37,6 @@ let store: AppStore | null = null;
 
 export function getStore(): AppStore {
   if (!store) {
-    const { mockData } = require('./mock-data');
     store = mockData;
   }
   return store!;

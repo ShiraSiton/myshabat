@@ -21,6 +21,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUser = useCallback(async (authId: string) => {
+    const { data } = await supabase.from('users').select('*').eq('id', authId).single();
+    if (data) setUser(data as User);
+    setLoading(false);
+  }, []);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) fetchUser(session.user.id);
@@ -33,22 +39,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
-
-  const fetchUser = async (authId: string) => {
-    const { data } = await supabase.from('users').select('*').eq('id', authId).single();
-    if (data) setUser(data as User);
-    setLoading(false);
-  };
+  }, [fetchUser]);
 
   const login = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  }, []);
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setLoading(false);
+        return { success: false, error: error.message };
+      }
 
-  const register = useCallback(async (email: string, password: string, _role: UserRole) => {
-    const { error: authError } = await supabase.auth.signUp({ email, password });
+      if (data.user) {
+        await fetchUser(data.user.id);
+      } else {
+        setLoading(false);
+      }
+
+      return { success: true };
+    } catch (err) {
+      setLoading(false);
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : 'ההתחברות נכשלה',
+      };
+    }
+  }, [fetchUser]);
+
+  const register = useCallback(async (email: string, password: string, role: UserRole) => {
+    const { error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { role } },
+    });
     if (authError) return { success: false, error: authError.message };
     return { success: true };
   }, []);

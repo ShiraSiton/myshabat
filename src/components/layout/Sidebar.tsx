@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import {
   Home, Search, Users, MessageCircle, Bell, Star,
-  MapPin, UserPlus, Shield, FileText, BarChart3,
+  UserPlus, Shield, FileText, BarChart3,
 } from 'lucide-react';
 
 interface NavItem {
@@ -18,17 +18,16 @@ interface NavItem {
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { isAdmin, isHost } = useAuth();
+  const { isAdmin } = useAuth();
 
   const navItems: NavItem[] = [
     { href: '/dashboard', label: 'לוח בקרה', icon: <Home className="h-4 w-4" /> },
     { href: '/dashboard/search', label: 'חיפוש', icon: <Search className="h-4 w-4" /> },
     { href: '/dashboard/matches', label: 'התאמות', icon: <Users className="h-4 w-4" /> },
+    { href: '/dashboard/matches/requests', label: 'פניות', icon: <UserPlus className="h-4 w-4" /> },
     { href: '/dashboard/chat', label: 'צ\'אט', icon: <MessageCircle className="h-4 w-4" /> },
     { href: '/dashboard/notifications', label: 'התראות', icon: <Bell className="h-4 w-4" /> },
     { href: '/dashboard/reviews', label: 'משובים', icon: <Star className="h-4 w-4" /> },
-    { href: '/community/map', label: 'מפת משתדלי השבת', icon: <MapPin className="h-4 w-4" /> },
-    { href: '/community/requests', label: 'בקשות היכרות', icon: <UserPlus className="h-4 w-4" /> },
   ];
 
   const adminItems: NavItem[] = [

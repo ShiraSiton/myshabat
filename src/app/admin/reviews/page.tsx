@@ -1,14 +1,51 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { getStore } from '@/lib/store';
+import { getReviews, updateReviewStatus } from '@/lib/api/reviews';
 import { formatDate } from '@/lib/utils';
 import { Star } from 'lucide-react';
+import type { Review, ReviewStatus } from '@/lib/types';
 
 export default function AdminReviewsPage() {
-  const store = getStore();
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getReviews()
+      .then((data) => {
+        if (!cancelled) setReviews(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'טעינת המשובים נכשלה');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleStatusUpdate = async (reviewId: string, status: ReviewStatus) => {
+    try {
+      setUpdatingId(reviewId);
+      setError('');
+      const updated = await updateReviewStatus(reviewId, status);
+      setReviews((current) => current.map((review) => (review.id === reviewId ? updated : review)));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'עדכון המשוב נכשל');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -16,8 +53,14 @@ export default function AdminReviewsPage() {
       <Card>
         <CardHeader><h2 className="font-semibold">כל המשובים</h2></CardHeader>
         <CardContent>
+          {error && <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+          {loading ? (
+            <p className="py-8 text-center text-gray-500">טוען משובים...</p>
+          ) : reviews.length === 0 ? (
+            <p className="py-8 text-center text-gray-500">אין משובים להצגה</p>
+          ) : (
           <div className="space-y-3">
-            {store.reviews.map((review) => (
+            {reviews.map((review) => (
               <div key={review.id} className="rounded-lg border p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -34,13 +77,18 @@ export default function AdminReviewsPage() {
                 <p className="text-sm text-gray-600">{review.content}</p>
                 {review.status === 'pending' && (
                   <div className="mt-3 flex gap-2">
-                    <Button size="sm">אשר פרסום</Button>
-                    <Button size="sm" variant="danger">דחה</Button>
+                    <Button size="sm" isLoading={updatingId === review.id} onClick={() => handleStatusUpdate(review.id, 'approved')}>
+                      אשר פרסום
+                    </Button>
+                    <Button size="sm" variant="danger" isLoading={updatingId === review.id} onClick={() => handleStatusUpdate(review.id, 'rejected')}>
+                      דחה
+                    </Button>
                   </div>
                 )}
               </div>
             ))}
           </div>
+          )}
         </CardContent>
       </Card>
     </div>
