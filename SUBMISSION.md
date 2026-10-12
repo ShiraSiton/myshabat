@@ -4,11 +4,15 @@
 
 https://myshabat.vercel.app/
 
-## קישור לקובץ אפיון PDF
+## קישור לקובץ אפיון מעוצב
+
+https://myshabat.vercel.app/docs/myshabat-spec.html
+
+> ניתן לפתוח את הקישור בדפדפן ולייצא ל־PDF דרך Print → Save as PDF.
+
+## קישור לקובץ אפיון PDF מקורי
 
 https://myshabat.vercel.app/docs/myshabat-spec.pdf
-
-> הערה: הקישור יעבוד אחרי שהגרסה האחרונה תעלה ל־Vercel.
 
 ## קישור למאגר הקוד ב־GitHub
 

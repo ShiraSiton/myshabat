@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>אפיון מערכת MyShabat</title>
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1e40af;
+      --green: #16a34a;
+      --orange: #ea580c;
+      --gray-900: #111827;
+      --gray-700: #374151;
+      --gray-600: #4b5563;
+      --gray-200: #e5e7eb;
+      --gray-100: #f3f4f6;
+      --gray-50: #f9fafb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #eef2ff;
+      color: var(--gray-900);
+      font-family: Arial, "Noto Sans Hebrew", "Segoe UI", sans-serif;
+      line-height: 1.75;
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 32px auto;
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.14);
+    }
+
+    header {
+      padding: 56px 64px;
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6 55%, #93c5fd);
+      color: white;
+    }
+
+    header .badge {
+      display: inline-flex;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 42px;
+      line-height: 1.2;
+    }
+
+    header p {
+      max-width: 700px;
+      margin: 18px 0 0;
+      font-size: 18px;
+      color: #eff6ff;
+    }
+
+    main { padding: 44px 64px 64px; }
+
+    section {
+      padding: 28px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    section:last-child { border-bottom: 0; }
+
+    h2 {
+      margin: 0 0 14px;
+      color: var(--blue-dark);
+      font-size: 26px;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 20px;
+      color: var(--gray-900);
+    }
+
+    p { margin: 0 0 12px; color: var(--gray-700); }
+
+    ul, ol { margin: 0; padding-right: 22px; color: var(--gray-700); }
+
+    li { margin: 6px 0; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--gray-200);
+      background: var(--gray-50);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gray-900);
+      font-size: 17px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      background: #dbeafe;
+      color: #1e40af;
+      margin: 3px;
+    }
+
+    .tag.green { background: #dcfce7; color: #166534; }
+    .tag.orange { background: #ffedd5; color: #9a3412; }
+    .tag.gray { background: #f3f4f6; color: #374151; }
+
+    .flow {
+      display: grid;
+      gap: 10px;
+      counter-reset: step;
+      margin-top: 16px;
+    }
+
+    .flow div {
+      position: relative;
+      padding: 14px 52px 14px 16px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--gray-200);
+    }
+
+    .flow div::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      right: 14px;
+      top: 12px;
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--blue);
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--gray-200);
+      padding: 10px 12px;
+      text-align: right;
+      vertical-align: top;
+    }
+
+    th { background: #eff6ff; color: #1e3a8a; }
+
+    .note {
+      padding: 16px;
+      border-radius: 16px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      margin-top: 16px;
+    }
+
+    .success {
+      padding: 16px;
+      border-radius: 16px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      margin-top: 16px;
+    }
+
+    footer {
+      padding: 24px 64px;
+      background: var(--gray-50);
+      color: var(--gray-600);
+      font-size: 14px;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    @media print {
+      body { background: white; }
+      .page { box-shadow: none; margin: 0; border-radius: 0; max-width: none; }
+      section { break-inside: avoid; }
+    }
+
+    @media (max-width: 780px) {
+      header, main, footer { padding-left: 24px; padding-right: 24px; }
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <span class="badge">מסמך אפיון MVP</span>
+      <h1>MyShabat — מערכת אירוח לשבת</h1>
+      <p>
+        פלטפורמה המחברת בין משפחות מארחות לבין מתארחים המעוניינים לחוות שבת משמעותית,
+        תוך שמירה על פרטיות, תהליך אישור מנהל, התאמות, צ׳אט ומשובים.
+      </p>
+    </header>
+
+    <main>
+      <section>
+        <h2>1. מטרת המערכת</h2>
+        <p>
+          מערכת MyShabat נועדה לאפשר חיבור בטוח, פשוט ומכבד בין משפחות המעוניינות לארח לשבת
+          לבין אנשים בתהליך התחזקות או אנשים המעוניינים לחוות שבת משפחתית.
+        </p>
+        <p>
+          המערכת מתמקדת ב־MVP פונקציונלי הכולל הרשמה, אישור מנהל, פרופילים, חיפוש, בקשות התאמה,
+          חשיפת פרטי קשר רק לאחר אישור, צ׳אט, התראות ומשובים.
+        </p>
+      </section>
+
+      <section>
+        <h2>2. סוגי משתמשים והרשאות</h2>
+        <div class="grid">
+          <div class="card">
+            <strong>מנהל מערכת</strong>
+            <ul>
+              <li>אישור משתמשים חדשים</li>
+              <li>חסימה והחזרה לפעילות</li>
+              <li>ניהול משובים</li>
+              <li>צפייה בדוחות בסיסיים</li>
+            </ul>
+          </div>
+          <div class="card">
+            <strong>מארח</strong>
+            <ul>
+              <li>יצירת פרופיל מארח</li>
+              <li>העלאת תמונות אירוח</li>
+              <li>חיפוש מתארחים</li>
+              <li>קבלת ואישור בקשות</li>
+              <li>צ׳אט ומשובים</li>
+            </ul>
+          </div>
+          <div class="card">
+            <strong>מתארח</strong>
+            <ul>
+              <li>יצירת פרופיל מתארח</li>
+              <li>חיפוש מארחים</li>
+              <li>שליחת בקשת אירוח</li>
+              <li>צ׳אט לאחר התאמה</li>
+              <li>כתיבת משוב</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>3. תהליך הרשמה ואישור</h2>
+        <div class="flow">
+          <div>משתמש נרשם למערכת ובוחר סוג משתמש: מארח או מתארח.</div>
+          <div>המשתמש נוצר בסטטוס <strong>ממתין לאישור</strong>.</div>
+          <div>מנהל מערכת נכנס למסך ניהול משתמשים ומאשר או חוסם משתמשים.</div>
+          <div>לאחר אישור, המשתמש מקבל גישה מלאה לאזור האישי.</div>
+          <div>נשלח מייל אישור למשתמש כאשר שירות המיילים פעיל ומוגדר.</div>
+        </div>
+        <p class="note">
+          במצב בדיקות של Resend ניתן לשלוח מיילים רק לכתובת המאומתת בחשבון. שליחה לכל המשתמשים דורשת אימות דומיין.
+        </p>
+      </section>
+
+      <section>
+        <h2>4. פרופיל מארח</h2>
+        <p>פרופיל מארח כולל את פרטי המשפחה, יכולות האירוח והעדפות האירוח.</p>
+        <p>
+          <span class="tag">שם משפחה</span>
+          <span class="tag">עיר</span>
+          <span class="tag">שכונה</span>
+          <span class="tag">מספר מקומות</span>
+          <span class="tag">סוג אורחים</span>
+          <span class="tag">טווח גילאים</span>
+          <span class="tag">לינה</span>
+          <span class="tag">סוג אירוח</span>
+          <span class="tag">תיאור</span>
+          <span class="tag">טלפון</span>
+          <span class="tag">תמונות</span>
+        </p>
+        <p>
+          תמונות המארח נשמרות ב־Supabase Storage ומוצגות בכרטיסי החיפוש ובפרופיל הציבורי.
+        </p>
+      </section>
+
+      <section>
+        <h2>5. פרופיל מתארח</h2>
+        <p>פרופיל מתארח מציג מידע רלוונטי לצורך התאמה לאירוח.</p>
+        <p>
+          <span class="tag green">שם פרטי</span>
+          <span class="tag green">גיל</span>
+          <span class="tag green">מגדר</span>
+          <span class="tag green">עיר</span>
+          <span class="tag green">מצב משפחתי</span>
+          <span class="tag green">תהליך התחזקות</span>
+          <span class="tag green">מספר אנשים</span>
+          <span class="tag green">צורך בלינה</span>
+          <span class="tag green">תיאור אישי</span>
+          <span class="tag green">טלפון</span>
+        </p>
+      </section>
+
+      <section>
+        <h2>6. פרטיות וחשיפת מידע</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>מצב</th>
+              <th>מה מוצג</th>
+              <th>מה מוסתר</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>לפני התאמה</td>
+              <td>שם, עיר, תיאור, דירוג ותמונות שאינן רגישות</td>
+              <td>טלפון, מייל, שכונה מדויקת ופרטי קשר</td>
+            </tr>
+            <tr>
+              <td>לאחר התאמה מאושרת</td>
+              <td>פרטי קשר מלאים לצורך תיאום האירוח</td>
+              <td>אין הסתרה בין הצדדים שאושרו</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>7. חיפוש וסינון</h2>
+        <p>המערכת מאפשרת חיפוש ידני בין מארחים ומתארחים לפי סוג המשתמש המחובר.</p>
+        <p>
+          <span class="tag orange">עיר</span>
+          <span class="tag orange">מגדר</span>
+          <span class="tag orange">גיל מ־עד</span>
+          <span class="tag orange">לינה</span>
+          <span class="tag orange">סוג אירוח</span>
+          <span class="tag orange">מצב משפחתי</span>
+        </p>
+        <p>בנוסף, המערכת מונעת שליחת בקשה כפולה לאותו משתמש כאשר קיימת בקשה פעילה או התאמה קיימת.</p>
+      </section>
+
+      <section>
+        <h2>8. בקשות התאמה והתאמות</h2>
+        <div class="flow">
+          <div>משתמש צופה בפרופיל ציבורי של הצד השני.</div>
+          <div>המשתמש שולח בקשת התאמה עם הודעה אישית אופציונלית.</div>
+          <div>הצד המקבל רואה את הבקשה במסך הפניות ומקבל התראה.</div>
+          <div>הצד המקבל מאשר או דוחה את הבקשה.</div>
+          <div>באישור נוצרת התאמה ונפתח ערוץ צ׳אט בין הצדדים.</div>
+        </div>
+      </section>
+
+      <section>
+        <h2>9. צ׳אט והתראות</h2>
+        <p>
+          לאחר אישור התאמה נפתחת שיחה בין המארח למתארח. כל צד יכול לשלוח הודעות ולראות את היסטוריית השיחה.
+        </p>
+        <p>
+          התראות נוצרות אוטומטית עבור בקשת התאמה חדשה, אישור/דחייה של בקשה והודעה חדשה בצ׳אט.
+          ההתראות נשמרות ב־Supabase ומוצגות באזור האישי ובפעמון העליון.
+        </p>
+      </section>
+
+      <section>
+        <h2>10. משובים</h2>
+        <p>
+          לאחר התאמה, כל משתמש יכול לכתוב משוב על הצד השני. המשוב נשמר בסטטוס <strong>ממתין לאישור</strong>
+          ורק מנהל מערכת יכול לאשר או לדחות אותו.
+        </p>
+        <p>משובים מאושרים מיועדים להצגה בפרופילים הציבוריים ולחישוב דירוג ממוצע.</p>
+      </section>
+
+      <section>
+        <h2>11. ניהול מערכת</h2>
+        <ul>
+          <li>ניהול משתמשים: אישור, חסימה והחזרה לפעילות.</li>
+          <li>ניהול משובים: אישור או דחייה של משובים.</li>
+          <li>דוחות בסיסיים: כמות משתמשים, מארחים, מתארחים, בקשות ומשובים.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>12. טכנולוגיות</h2>
+        <table>
+          <tbody>
+            <tr><th>Frontend</th><td>Next.js, React, Tailwind CSS</td></tr>
+            <tr><th>Backend / DB</th><td>Supabase PostgreSQL, Auth, Storage, RLS</td></tr>
+            <tr><th>Hosting</th><td>Vercel</td></tr>
+            <tr><th>Email</th><td>Resend</td></tr>
+            <tr><th>Version Control</th><td>GitHub</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>13. הרחבות עתידיות</h2>
+        <p>
+          מודול “משתדלי השבת” הוצא מה־MVP הנוכחי ונשמר כהרחבה עתידית.
+        </p>
+        <ul>
+          <li>קהילת מתחזקים לפי אזור.</li>
+          <li>בקשות היכרות קהילתיות.</li>
+          <li>צ׳אט קהילתי.</li>
+          <li>מפת Google Maps.</li>
+          <li>התאמות אוטומטיות מתקדמות.</li>
+          <li>דומיין מאומת לשליחת מיילים לכל המשתמשים.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>14. סטטוס MVP</h2>
+        <p class="success">
+          ה־MVP כולל את זרימת הליבה של המערכת: הרשמה, אישור מנהל, פרופילים, חיפוש, בקשות התאמה,
+          צ׳אט, התראות, משובים וניהול בסיסי. המערכת מוכנה להצגת פרויקט ולבדיקות משתמשים ראשוניות.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      MyShabat — מסמך אפיון MVP | עודכן בהתאם לגרסת הפרויקט הנוכחית
+    </footer>
+  </div>
+</body>
+</html>
