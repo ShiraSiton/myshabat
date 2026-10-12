@@ -19,6 +19,11 @@ export function Header() {
       ? '/dashboard/profile/guest'
       : null;
 
+  const closeMenus = () => {
+    setIsMenuOpen(false);
+    setIsProfileOpen(false);
+  };
+
   useEffect(() => {
     let cancelled = false;
 
@@ -74,21 +79,21 @@ export function Header() {
                 </button>
                 {isProfileOpen && (
                   <div className="absolute left-0 top-full mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
-                    <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
+                    <Link href="/dashboard" onClick={closeMenus} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
                       <User className="h-4 w-4" /> אזור אישי
                     </Link>
                     {profileHref && (
-                      <Link href={profileHref} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
+                      <Link href={profileHref} onClick={closeMenus} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
                         <User className="h-4 w-4" /> הפרופיל שלי
                       </Link>
                     )}
                     {isAdmin && (
-                      <Link href="/admin" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
+                      <Link href="/admin" onClick={closeMenus} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
                         ניהול מערכת
                       </Link>
                     )}
                     <hr className="my-1" />
-                    <button onClick={logout} className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50">
+                    <button onClick={() => { closeMenus(); logout(); }} className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50">
                       <LogOut className="h-4 w-4" /> התנתק
                     </button>
                   </div>
@@ -110,6 +115,51 @@ export function Header() {
           </button>
         </div>
       </div>
+      {isMenuOpen && (
+        <div className="border-t border-gray-200 bg-white md:hidden">
+          <nav className="mx-auto max-w-7xl space-y-1 px-4 py-3">
+            <Link onClick={closeMenus} href="/about" className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">אודות</Link>
+            <Link onClick={closeMenus} href="/faq" className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">שאלות נפוצות</Link>
+            <Link onClick={closeMenus} href="/contact" className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">צור קשר</Link>
+
+            {user ? (
+              <>
+                <hr className="my-2" />
+                <Link onClick={closeMenus} href="/dashboard" className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">לוח בקרה</Link>
+                {profileHref && (
+                  <Link onClick={closeMenus} href={profileHref} className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">הפרופיל שלי</Link>
+                )}
+                <Link onClick={closeMenus} href="/dashboard/search" className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">חיפוש</Link>
+                <Link onClick={closeMenus} href="/dashboard/matches" className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">התאמות</Link>
+                <Link onClick={closeMenus} href="/dashboard/matches/requests" className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">פניות</Link>
+                <Link onClick={closeMenus} href="/dashboard/chat" className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">צ׳אט</Link>
+                <Link onClick={closeMenus} href="/dashboard/notifications" className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">
+                  <span>התראות</span>
+                  {unreadCount > 0 && <span className="rounded-full bg-red-600 px-2 py-0.5 text-xs text-white">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+                </Link>
+                <Link onClick={closeMenus} href="/dashboard/reviews" className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">משובים</Link>
+                {isAdmin && (
+                  <>
+                    <hr className="my-2" />
+                    <Link onClick={closeMenus} href="/admin" className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">ניהול מערכת</Link>
+                    <Link onClick={closeMenus} href="/admin/users" className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">ניהול משתמשים</Link>
+                    <Link onClick={closeMenus} href="/admin/reviews" className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50">ניהול משובים</Link>
+                  </>
+                )}
+                <hr className="my-2" />
+                <button onClick={() => { closeMenus(); logout(); }} className="block w-full rounded-lg px-3 py-2 text-right text-sm font-medium text-red-600 hover:bg-red-50">
+                  התנתקות
+                </button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                <Link onClick={closeMenus} href="/login"><Button variant="outline" className="w-full" size="sm">התחברות</Button></Link>
+                <Link onClick={closeMenus} href="/register"><Button className="w-full" size="sm">הרשמה</Button></Link>
+              </div>
+            )}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
